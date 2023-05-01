@@ -1,0 +1,44 @@
+version: '3'
+
+services:
+  db:
+    image: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 12345
+      MYSQL_DATABASE: db_pizza
+      MYSQL_HOST: db
+    volumes:
+      - ./mysql:/var/lib/mysql
+    ports:
+      - "3304:3304"
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    restart: always
+    working_dir: /app
+    logging:
+      driver: none
+    depends_on: 
+      - db
+    environment:
+      PMA_HOST: db
+      PMA_USER: root
+      PMA_PASSWORD: 12345
+    ports:
+      - "8080:80"
+
+  app:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    user: root
+    environment: 
+      - MYSQL_HOST=db
+    volumes:
+      - "./:/app"
+    ports:
+      - "3003:3303"
+    depends_on: 
+      - db
+    command: sh -c "sleep 10 && npm start"

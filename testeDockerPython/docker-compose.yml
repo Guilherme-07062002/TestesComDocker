@@ -1,0 +1,8 @@
+version: '3'
+services:
+
+  python:
+    build: .
+    volumes:
+      - ./exercicios:/exercicios
+    command: python /exercicios/ex01.py
